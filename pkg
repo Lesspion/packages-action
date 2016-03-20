@@ -1,0 +1,34 @@
+#!/usr/bin/zsh
+
+function check() {
+    array=()
+    [ -f composer.json ] && composer $1 &&  array+=('composer')
+    [ -f package.json ] && npm $1 && array+=('npm')
+    [ -f bower.json ] && bower $1 && array+=('bower')
+    eval $array="'$array'"
+}
+
+action=""
+
+GREEN="$(tput setaf 2)"
+RESET="$(tput sgr0)"
+
+if [[ $1 == "-i" ]]; then
+    action="install"
+elif [[ $1 == "-u" ]]; then
+    action="update"
+elif [[ $1 == "i" ]]; then
+    action="install"
+elif [[ $1 == "u" ]]; then
+    action="update"
+else
+    action=$1
+fi
+
+check $action
+
+echo "Your action $action has been applied to :"
+for item in ${array[*]}
+do
+    printf "   ${GREEN}%s${RESET}\n" $item
+done
